@@ -1,0 +1,17 @@
+---
+
+- name: restart elasticsearch
+  service: name=elasticsearch state=restarted
+
+- name: restart graylog-server
+  service: name=graylog-server state=restarted
+
+- name: save iptables 
+  command: /sbin/service iptables save
+  become: true
+  become_method: su
+
+- name: restart iptables
+  service: name=iptables state=restarted
+  become: true
+  become_method: su

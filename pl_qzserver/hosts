@@ -31,3 +31,13 @@ qzbilling
 [commondb]
 qzdev_game
 qzs1
+
+[monitorserver]
+qzbuilder
+
+[monitoragent]
+qzbuilder
+qzcs
+qzios
+qzs1
+qzs2

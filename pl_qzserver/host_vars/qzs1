@@ -1,3 +1,4 @@
 ---
 gamedb: qzd1
 logdb: qzlog1
+statdb: qzstat1

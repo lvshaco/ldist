@@ -1,0 +1,23 @@
+---
+- name: Upload collector sidecar rpm
+  copy: src=../dep/{{sidecar_rpm}}
+      dest=/usr/local/src/{{sidecar_rpm}}
+
+- name: Install collector sidecar 
+  yum: name=/usr/local/src/{{ sidecar_rpm }} state=present
+  register: r
+
+- name: Create system service
+  command: graylog-collector-sidecar -service install
+  when: r.changed
+      
+- name: Create collector_sidecar.yml
+  template: src=collector_sidecar.yml.j2
+      dest=/etc/graylog/collector-sidecar/collector_sidecar.yml
+  notify: restart sidecar
+
+- name: flush handlers 
+  meta: flush_handlers
+
+- name: Ensure collector sidecar running
+  service: name=collector-sidecar state=started

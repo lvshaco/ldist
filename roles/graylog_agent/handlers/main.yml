@@ -1,0 +1,4 @@
+---
+
+- name: restart sidecar
+  service: name=collector-sidecar state=restarted
