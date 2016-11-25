@@ -1,0 +1,108 @@
+---
+- name: Import elasticsearch GPGKEY
+  command: rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+
+- name: Create mongodb repo file
+  template: src=elasticsearch.repo.j2
+    dest=/etc/yum.repos.d/elasticsearch.repo
+
+- name: Create mongodb repo file
+  template: src=mongodb-org.repo.j2
+    dest=/etc/yum.repos.d/mongodb-org-3.2.repo
+
+- name: Install dep
+  yum: name={{item}} state=installed
+  with_items:
+    - java-1.8.0-openjdk-headless.x86_64
+    - mongodb-org
+    - elasticsearch
+
+- name: Install graylog
+  yum: name=https://packages.graylog2.org/repo/packages/graylog-2.1-repository_latest.rpm
+  
+- name: Set elasticsearch config | cluster.name
+  lineinfile: dest=/etc/elasticsearch/elasticsearch.yml
+    regexp='^#\ cluster.name:*'
+    line='cluster.name{{":"}} graylog' 
+    backrefs=yes
+#backrefs=yes
+  notify: restart elasticsearch
+
+- name: Set graylog config | elasticsearch_cluster_name 
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^#elasticsearch_cluster_name =*'
+    line='elasticsearch_cluster_name = graylog' 
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | password_secret
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^password_secret =*'
+    line='password_secret = TBejJ7r9grVKr5V0rpdJBye4T5ctEjfm1VYfnc0pSMDWMlW76KaKx1t0Knp3SMR5jIKXJgc8E5btBam31kGdz6KBGPnkpN7S' 
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | root_password_sha2
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^root_password_sha2 =*'
+    line='root_password_sha2 = 66444221f8a63857ee4294ef7e303eee731e4684d7eb0bb5029b1690caf03c87'
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | rest_listen_uri
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^rest_listen_uri =*'
+    line='rest_listen_uri = http://0.0.0.0:{{graylog_port}}/api/'
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | web_listen_uri
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^#web_listen_uri =*'
+    line='web_listen_uri = http://0.0.0.0:{{graylog_port}}/'
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | rest_transport_uri
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='^#rest_transport_uri =*'
+    line='rest_transport_uri = http://{{graylog_host}}:{{graylog_port}}/'
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set graylog config | root_timezone
+  lineinfile: dest=/etc/graylog/server/server.conf
+    regexp='#root_timezone =*'
+    line='root_timezone = Asia/Shanghai'
+    backrefs=yes
+  notify: restart graylog-server
+
+- name: Set to start at boot
+  service: name={{item}} enabled=yes
+  with_items:
+    - mongod
+    - elasticsearch
+    - graylog-server
+
+- name: flush handlers
+  meta: flush_handlers
+
+- name: Ensure graylog server running
+  service: name={{item}} state=started
+  with_items:
+    - mongod
+    - elasticsearch
+    - graylog-server
+
+# uncomment to use iptables
+#- name: iptables open graylog port
+#  iptables:
+#    action: insert
+#    chain: INPUT 
+#    ctstate: new
+#    protocol: tcp
+#    destination_port: "{{graylog_port}}"
+#    jump: ACCEPT
+#  notify: 
+#    - save iptables
+#    - restart iptables

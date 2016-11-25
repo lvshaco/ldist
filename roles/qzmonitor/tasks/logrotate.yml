@@ -1,6 +1,7 @@
 ---
 - name: Logrotate install qzserver
-  include_role: name=logrotate
+  include_role: 
+    name: logrotate
   vars: 
     logrotate_scripts:
       - name: "{{server_name}}"
@@ -11,11 +12,9 @@
           - rotate 10
           - missingok
           - notifempty
-            #          - compress
-            #- delaycompress
         scripts:
             postrotate: "[ -s {{server_pidfile}} ] && kill -USR1 `cat {{server_pidfile}}`"
-  when: inventory_hostname in groups["gameserver"]
+  when: inventory_hostname in groups['gameserver']
 
 - name: Logrotate install qzstate
   include_role: name=logrotate
