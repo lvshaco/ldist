@@ -3,5 +3,10 @@
 # mysql
 gamedb: qzdcs
 logdb: qzlogcs
+statdb: qzstatcs
 
-portoffset: 100
+gm_state: 100
+
+gateport: 18102
+cmdport: 18101
+redis_port: 17100

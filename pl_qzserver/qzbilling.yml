@@ -1,8 +1,6 @@
 ---
 - name: Qz billingserver
   hosts: billingserver
-  pre_tasks:
-    - include: fix_vars.yml
   tasks:
     - name: billing
       include_role: 
