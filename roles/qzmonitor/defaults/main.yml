@@ -1,4 +1,5 @@
 ---
 
-qzserver_pidfile: "{{server_home}}/bin/shaco.pid"
-qzstate_pidfile: "{{server_home}}/bin/shaco.state.pid"
+server_pidfile: "{{server_home}}/bin/shaco.pid"
+state_pidfile: "{{server_home}}/bin/shaco.state.pid"
+billing_pidfile: "{{server_home}}/bin/shaco.billing.pid"

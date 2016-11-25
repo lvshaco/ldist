@@ -3,7 +3,7 @@
   include_role: name=logrotate
   vars: 
     logrotate_scripts:
-      - name: qzserver_{{gateport}}
+      - name: "{{server_name}}"
         path: "{{server_logdir}}/shaco.log"
         options:
           - daily
@@ -11,16 +11,17 @@
           - rotate 10
           - missingok
           - notifempty
-          - compress
-          - delaycompress
+            #          - compress
+            #- delaycompress
         scripts:
-            postrotate: "[ -s {{qzserver_pidfile}} ] && kill -USR1 `cat {{qzserver_pidfile}}`"
+            postrotate: "[ -s {{server_pidfile}} ] && kill -USR1 `cat {{server_pidfile}}`"
+  when: inventory_hostname in groups["gameserver"]
 
 - name: Logrotate install qzstate
   include_role: name=logrotate
   vars: 
     logrotate_scripts:
-      - name: qzstate_{{gateport}}
+      - name: "{{state_name}}"
         path: "{{server_logdir}}/shaco.log.state"
         options:
           - daily
@@ -28,7 +29,26 @@
           - rotate 10
           - missingok
           - notifempty
-          - compress
-          - delaycompress
+            #- compress
+            #- delaycompress
         scripts:
-            postrotate: "[ -s {{qzstate_pidfile}} ] && kill -USR1 `cat {{qzstate_pidfile}}`"
+            postrotate: "[ -s {{state_pidfile}} ] && kill -USR1 `cat {{state_pidfile}}`"
+  when: inventory_hostname in groups["gameserver"]
+
+- name: Logrotate install qzbilling
+  include_role: name=logrotate
+  vars: 
+    logrotate_scripts:
+      - name: "{{billing_name}}"
+        path: "{{server_logdir}}/shaco.log.billing"
+        options:
+          - daily
+          - dateext
+          - rotate 10
+          - missingok
+          - notifempty
+            #- compress
+            #- delaycompress
+        scripts:
+            postrotate: "[ -s {{billing_pidfile}} ] && kill -USR1 `cat {{billing_pidfile}}`"
+  when: inventory_hostname in groups["billingserver"]
