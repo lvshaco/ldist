@@ -4,4 +4,6 @@
 gamedb: qzdcs
 logdb: qzlogcs
 
-portoffset: 100
+gateport: 18102
+cmdport: 18101
+redis_port: 17100

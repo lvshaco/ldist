@@ -1,22 +1,64 @@
 ---
 - name: Qz monitor
+  hosts: gameserver
+  become: true
+  become_method: su
+  vars:
+    server_pidfile: "{{server_home}}/bin/shaco.pid"
+    state_pidfile: "{{server_home}}/bin/shaco.state.pid"
+  roles:
+    - role: logrotate
+      logrotate_scripts:
+      - name: "{{server_name}}"
+        path: "{{server_logdir}}/shaco.log"
+        options:
+          - daily
+          - dateext
+          - rotate 10
+          - missingok
+          - notifempty
+        scripts:
+            postrotate: "[ -s {{server_pidfile}} ] && kill -USR1 `cat {{server_pidfile}}`"
+    - role: logrotate
+      logrotate_scripts:
+        - name: "{{state_name}}"
+          path: "{{server_logdir}}/shaco.log.state"
+          options:
+            - daily
+            - dateext
+            - rotate 10
+            - missingok
+            - notifempty
+              #- compress
+              #- delaycompress
+          scripts:
+              postrotate: "[ -s {{state_pidfile}} ] && kill -USR1 `cat {{state_pidfile}}`"
+
+- name: Qz monitor
+  hosts: billingeserver
+  become: true
+  become_method: su
+  vars:
+    billing_pidfile: "{{server_home}}/bin/shaco.billing.pid"
+  roles:
+    - role: logrotate
+      logrotate_scripts:
+        - name: "{{billing_name}}"
+          path: "{{server_logdir}}/shaco.log.billing"
+          options:
+            - daily
+            - dateext
+            - rotate 10
+            - missingok
+            - notifempty
+              #- compress
+              #- delaycompress
+          scripts:
+              postrotate: "[ -s {{billing_pidfile}} ] && kill -USR1 `cat {{billing_pidfile}}`"
+
+- name: Qz monitor
   hosts: all
   become: true
   become_method: su
-  pre_tasks:
-    - include: fix_vars.yml
   roles:
     - role: qzmonitor
-      #    - role: ansible-logrotate
-      #      logrotate_scripts:
-      #        - name: shaco
-      #          path: "{{server_home}}/shaco.log"
-      #          options:
-      #            - daily
-      #            - dateext
-      #            - rotate 40
-      #            - missingok
-      #            - compress
-      #            - delaycompress
-      #          scripts:
-      #            postrotate: "[ -s {{pidfile}} ] && kill -USR1 `cat {{pidfile}}`"
