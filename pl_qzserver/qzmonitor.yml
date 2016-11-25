@@ -1,5 +1,5 @@
 ---
-- name: Qz monitor
+- name: Qz logrotate in gameserver
   hosts: gameserver
   become: true
   become_method: su
@@ -34,7 +34,7 @@
           scripts:
               postrotate: "[ -s {{state_pidfile}} ] && kill -USR1 `cat {{state_pidfile}}`"
 
-- name: Qz monitor
+- name: Qz logrotate in billingserver
   hosts: billingeserver
   become: true
   become_method: su
@@ -56,9 +56,16 @@
           scripts:
               postrotate: "[ -s {{billing_pidfile}} ] && kill -USR1 `cat {{billing_pidfile}}`"
 
-- name: Qz monitor
-  hosts: all
+- name: Qz monitor server
+  hosts: monitorserver
   become: true
   become_method: su
   roles:
-    - role: qzmonitor
+    - role: graylog_server
+
+- name: Qz monitor agent
+  hosts: monitoragent
+  become: true
+  become_method: su
+  roles:
+    - role: graylog_agent
