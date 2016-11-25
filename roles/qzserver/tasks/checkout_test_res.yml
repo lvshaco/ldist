@@ -1,0 +1,30 @@
+- name: Svn co test res
+  subversion:
+    repo: "{{test_res_svn_dist}}"
+    dest: "{{test_res_dir_dist}}"
+    force: true
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: r
+
+- name: Check if res/lua exists
+  stat:
+    path: "{{test_res_dir_dist}}/res/lua"
+  register: resdir
+  when: not r.changed
+
+- name: Make convert test_res
+  shell: make test_convres test_res_dir={{playbook_dir}}/{{test_res_dir_dist}} res_dir={{playbook_dir}}/{{res_dir_dist}}
+  args:
+    chdir: "{{src_dir_dist}}"
+  when: r.changed or (resdir and not resdir.stat.exists)
+
+- name: Collect lua file list
+  find: paths={{playbook_dir}}/{{test_res_dir_dist}}/res/lua patterns="*.lua"
+  register: r
+
+- name: Collect lua file name list
+  set_fact:
+    test_lua_files: "{{r.files|map(attribute='path')|map('basename')|map('regex_replace', '__tp(.*).lua','\\1')|list }}"
+  when: r |length > 0
+

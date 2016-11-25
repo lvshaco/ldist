@@ -1,0 +1,27 @@
+---
+- name: Svn co server
+  subversion:
+    repo: "{{server_svn}}"
+    dest: server
+    force: true
+    username: "{{svn_user}}"
+    password: "{{svn_pass}}"
+  notify: restart server
+
+- name: Make server trunk proto
+  shell: make proto
+  args:
+    chdir: "{{server_home}}"
+    creates: res/pb
+  notify: restart server
+
+- name: Make server trunk res
+  shell: make res
+  args:
+    chdir: "{{server_home}}"
+    creates: res/lua
+  notify: restart server
+
+- name: Create config_self
+  template: src=config_self.j2 dest={{server_home}}/bin/config_self
+  notify: restart server

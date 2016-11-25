@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Simple web1 init.d script for RHEL-based distros
+#
+# chkconfig: - 58 74
+# description: qaweb1
+#
+# Source function library
+. /etc/init.d/functions
+
+WEB1_USER={{ web1_user }}
+PIDFILE={{ web1_pidfile }}
+CONF={{web1_config}}
+EXEC={{ shacobin_dir}}/shaco
+
+case "$1" in
+    start)
+        if [ -f $PIDFILE ]
+        then
+                echo "$PIDFILE exists, process is already running or crashed"
+        else
+                echo "Starting Web1 server..."
+                daemon --user $WEB1_USER $EXEC $CONF --daemon 1
+        fi
+        ;;
+    stop)
+        if [ ! -f $PIDFILE ]
+        then
+                echo "$PIDFILE does not exist, process is not running"
+        else
+                PID=$(cat $PIDFILE)
+                echo "Stopping ..."
+                kill -2 $PID
+                while [ -x /proc/${PID} ]
+                do
+                    echo "Waiting for Web1 to shutdown ..."
+                    sleep 1
+                done
+                echo "Web1 stopped"
+        fi
+        ;;
+    status)
+        status -p "${PIDFILE}" "web1"
+        ;;
+    restart|force-reload)
+        ${0} stop
+        ${0} start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/web1 {start|stop|status|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit $?

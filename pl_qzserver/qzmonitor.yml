@@ -1,0 +1,22 @@
+---
+- name: Qz monitor
+  hosts: all
+  become: true
+  become_method: su
+  pre_tasks:
+    - include: fix_vars.yml
+  roles:
+    - role: qzmonitor
+      #    - role: ansible-logrotate
+      #      logrotate_scripts:
+      #        - name: shaco
+      #          path: "{{server_home}}/shaco.log"
+      #          options:
+      #            - daily
+      #            - dateext
+      #            - rotate 40
+      #            - missingok
+      #            - compress
+      #            - delaycompress
+      #          scripts:
+      #            postrotate: "[ -s {{pidfile}} ] && kill -USR1 `cat {{pidfile}}`"

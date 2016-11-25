@@ -1,0 +1,5 @@
+---
+qaweb1_iptables_sources: "{{wan_iptables}}"
+qaweb1_server_user: qzs0
+qaweb1_server_dir: server 
+qaweb1_server_name: (临时用做导入服！！！！）先行服

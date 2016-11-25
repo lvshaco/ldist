@@ -1,0 +1,89 @@
+---
+# dist web1
+- name: Checkout web1
+  subversion: 
+    repo: svn://192.168.1.200/quanzhi/program/tools/web1
+    dest: .log/web1
+    force: true 
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: code
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+- name: Pack web1
+  command: tar -zcf web1.tgz web1 --exclude=.svn*
+  args: 
+    chdir: .log
+  when: code.changed
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+- name: add web1 user
+  user:
+    name: "{{web1_user}}"
+    comment: "{{web1_user}}"
+    shell: /bin/false
+    system: yes
+  when: web1_user != "root"
+
+- name: Upload web1
+  copy:
+    src: .log/web1.tgz
+    dest: /usr/local/src/web1.tgz
+
+- name: Extract web1
+  unarchive:
+    src: /usr/local/src/web1.tgz
+    dest: /usr/local/src
+    copy: no
+    owner: "{{web1_user}}"
+    group: "{{web1_user}}"
+  notify: restart web1
+
+- name: Create web1 config
+  template:
+    src: config.j2
+    dest: /usr/local/src/web1/conf/config
+  notify: restart web1
+
+- name: Create web1 init script
+  template:
+    src: web1.init.j2
+    dest: /etc/init.d/web1
+    mode: 0755
+
+- name: Set web1 to start at boot
+  service:
+    name: web1
+    enabled: yes
+
+- name: Check if shacobin upgraded to restart web1
+  debug: msg="Need restart web1 due shacobin upgrade"
+  when: shacobin is defined and shacobin.changed
+  changed_when: true
+  notify: restart web1
+
+- name: Filter iptables
+  iptables:
+    action: insert
+    chain: INPUT 
+    ctstate: new
+    protocol: tcp
+    destination_port: 20160
+    jump: ACCEPT
+    source: "{{item}}"
+  with_items: "{{ qaweb1_iptables_sources }}"
+  notify: 
+    - save iptables
+    - restart iptables
+
+- name: flush handlers to apply config changes
+  meta: flush_handlers
+
+- name: Ensure web1 is running
+  service:
+    name: web1
+    state: started

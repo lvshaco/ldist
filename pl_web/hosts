@@ -1,0 +1,3 @@
+qzdev_db group=root owner=root
+qzweber1 group=www  owner=coolsoft_ftpftp
+qzweber2 group=nginx owner=nginx

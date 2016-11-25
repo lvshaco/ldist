@@ -1,0 +1,48 @@
+---
+- name: Checkout project.qz code
+  subversion: 
+    repo: "{{web_svn}}"
+    dest: .log/project.qz 
+    force: true 
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: code
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+- name: Fix runtime file mode
+  file: path={{item}} mode=777
+  with_items:
+  - .log/project.qz/yiiframework/cli/runtime
+  - .log/project.qz/yiiframework/cli/views/webapp/protected/runtime
+  - .log/project.qz/qz_api/www/runtime
+  - .log/project.qz/qzadmin/www/runtime
+  - .log/project.qz/qzadmin/protected/runtime
+  register: code2
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+## with GZIP=-n project.qz.tgz will same if project.qz same
+- name: Pack project.qz code
+  command: tar -zcf project.qz.tgz project.qz --exclude=.svn*
+  args:
+    chdir: .log
+  environment: 
+    - GZIP: -n
+  when: code.changed or code2.changed
+  run_once: true
+  delegate_to: localhost
+  become: false
+  
+- name: Upload project.qz.tgz
+  copy: src=.log/project.qz.tgz dest={{web_distdir}}/project.qz.tgz
+
+- name: Extract project.qz.tgz
+  unarchive:
+    src: "{{web_distdir}}/project.qz.tgz"
+    dest: "{{web_distdir}}"
+    copy: no
+    group: "{{group}}"
+    owner: "{{owner}}"

@@ -1,0 +1,9 @@
+---
+- name: a1111
+  shell: echo "1111"
+  run_once: true
+  delegate_to: localhost
+
+- name: a2222
+  shell: echo "2222"
+

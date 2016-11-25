@@ -1,0 +1,16 @@
+---
+- name: Upload server.tgz
+  copy: src={{src_dir_dist}}/server.tgz 
+        dest={{server_home|dirname}}/server.tgz
+
+- name: Create server directory
+  file: path={{server_home}} state=directory
+
+- name: Extract server.tgz
+  unarchive: src={{server_home|dirname}}/server.tgz 
+    dest={{server_home}} copy=no
+  notify: restart {{server_type}}
+
+- name: Create config_self
+  template: src=config_self.j2 dest={{server_home}}/bin/config_self
+  notify: restart {{server_type}}

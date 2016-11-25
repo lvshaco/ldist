@@ -1,0 +1,137 @@
+# redis_bind
+# redis_port
+# redis_password
+# redis_rename_commands
+# - CONFIG NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkCONFIG
+# - FLUSHALL NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkFLUSHALL
+# - FLUSHDB NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkFLUSHDB
+
+# redis_version: 2.8.24
+# redis_tarball: dep/redis-2.8.24.tar.gz
+
+daemonize yes
+pidfile /usr/local/redis/var/redis-17000.pid
+
+port 17000
+bind 127.0.0.1
+
+# unixsocket /tmp/redis.sock
+# unixsocketperm 700
+
+timeout 0
+tcp-keepalive 0
+tcp-backlog 511
+
+loglevel notice
+logfile /usr/local/redis/var/redis-17000.log
+# syslog-enabled no
+# syslog-ident redis
+# syslog-facility local0
+
+databases 16
+
+################################ SNAPSHOTTING  ################################
+
+save 900 1
+save 300 10
+save 60 10000
+
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump-17000.rdb
+
+dir /usr/local/redis/var/
+
+################################# REPLICATION #################################
+
+# slaveof <masterip> <masterport>
+slave-serve-stale-data yes
+slave-read-only yes
+
+repl-diskless-sync no
+repl-diskless-sync-delay 5
+
+# repl-ping-slave-period 10
+
+# repl-timeout 60
+
+repl-disable-tcp-nodelay no
+
+# repl-backlog-size 1mb
+
+# repl-backlog-ttl 3600
+
+slave-priority 100
+
+# min-slaves-to-write 3
+# min-slaves-max-lag 10
+
+################################## SECURITY ###################################
+requirepass NzMyZmM0ZWFjMmJkMjhkZDBmYmQ3NTQx
+
+rename-command CONFIG NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkCONFIG
+rename-command FLUSHALL NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkFLUSHALL
+rename-command FLUSHDB NGFhMmY1NzA0NTViNmZiZWMxNjlmNTNkFLUSHDB
+
+################################### LIMITS ####################################
+
+# maxclients 10000
+
+# maxmemory <bytes>
+# maxmemory-policy volatile-lru
+
+# maxmemory-samples 3
+
+############################## APPEND ONLY MODE ###############################
+
+appendonly no
+appendfilename "appendonly.aof"
+appendfsync everysec
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+
+aof-load-truncated yes
+
+################################ LUA SCRIPTING  ###############################
+
+lua-time-limit 5000
+
+################################## SLOW LOG ###################################
+
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+################################ LATENCY MONITOR ##############################
+
+latency-monitor-threshold 0
+
+############################# Event notification ##############################
+
+notify-keyspace-events ""
+
+############################### ADVANCED CONFIG ###############################
+
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+
+set-max-intset-entries 512
+
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+
+hll-sparse-max-bytes 3000
+
+activerehashing yes
+
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+
+hz 10
+
+aof-rewrite-incremental-fsync yes

@@ -1,0 +1,3 @@
+---
+mysql_datadir_oldhome: /var/lib
+mysql_datadir_newhome: /home/data

@@ -1,0 +1,7 @@
+---
+- name: Add user
+  hosts: all
+  become: true
+  become_method: su
+  roles:
+    - sshuser

@@ -1,0 +1,9 @@
+---
+#
+- name: Dist qaweb1
+  hosts: all
+  become: true
+  become_method: su
+  roles:
+      - { role: shacobin, tags: ['shacobin'] }
+      - { role: qaweb1, tags: ['code'] }

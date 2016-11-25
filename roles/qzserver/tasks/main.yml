@@ -1,0 +1,82 @@
+---
+
+# stopped
+- include: stopped.yml
+  tags: [ 'reinit', 'importdb' ]
+
+# mysqldb
+- include: mysqldb.yml mysql_db={{mysql_gamedb}} mysql_users={{mysql_gamedb_users}}
+  become: true
+  become_method: su
+  tags: [ 'init', 'dev' ]
+
+- include: mysqldb.yml mysql_db={{mysql_commondb}} mysql_users={{mysql_commondb_users}}
+  become: true
+  become_method: su
+  when: inventory_hostname in groups['commondb']
+  tags: [ 'init', 'dev' ]
+
+- include: server_service.yml
+  become: true
+  become_method: su
+  tags: [ 'init', 'dev' ]
+
+# dev env
+- include: dev_dep.yml
+  become: true
+  become_method: su
+  tags: [ 'dev' ]
+- include: dev_prj.yml
+  tags: [ 'dev' ]
+
+# dist env
+- include: package.yml
+  run_once: true
+  delegate_to: localhost
+  tags: [ 'init', 'upgrade', 'hotfix', 'reloadres' ]
+- include: upgrade.yml server_type=["server"]
+  tags: [ 'init', 'upgrade' ]
+- include: hotfix.yml
+  tags: [ 'hotfix' ]
+- include: reloadres.yml
+  tags: [ 'reloadres' ]
+
+# db
+- include: sync_time.yml
+  tags: [ 'reinit', 'importdb' ]
+- include: backup_db.yml 
+  tags: [ 'reinit', 'dumpdb', 'importdb' ]
+- include: clean_db.yml reinit=true
+  tags: [ 'reinit' ]
+- include: clean_db.yml reinit=false
+  tags: [ 'init', 'dev' ]
+- include: fetch_db.yml
+  tags: [ 'dumpdb' ]
+
+- include: import_db.yml
+  tags: [ 'importdb' ]
+
+# started
+- include: started.yml
+  tags: [ 'init', 'dev', 'reinit', 'upgrade', 'importdb' ]
+
+# iptables
+- include: iptables_open.yml port={{mysql_port}} ipwhitelist=[]
+  become: true
+  become_method: su
+  tags: [ 'gateopen' ]
+
+- include: iptables_open.yml port={{gateport}} ipwhitelist={{gate_whitelist}}
+  become: true
+  become_method: su
+  tags: [ 'gateopen' ]
+
+- include: iptables_limit.yml port={{mysql_port}} ipwhitelist=[]
+  become: true
+  become_method: su
+  tags: [ 'init', 'gatelimit' ]
+
+- include: iptables_limit.yml port={{gateport}} ipwhitelist={{gate_whitelist}}
+  become: true
+  become_method: su
+  tags: [ 'init', 'gatelimit' ]

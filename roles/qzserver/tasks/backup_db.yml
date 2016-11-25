@@ -1,0 +1,83 @@
+---
+- set_fact: backup_date="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
+- debug: var=backup_date
+
+## backup redis
+- name: Check if redis rdb exist  
+  stat: path={{redis_data_home}}/{{redis_port}}/dump.rdb
+  register: rdbfile
+  changed_when: false
+
+- name: Create backup redis rdb dir
+  file: 
+    path: "{{backupdir_redis}}"
+    state: directory
+  become: true
+  become_method: su
+
+- name: Backup redis rdb
+  shell: >
+    cp {{redis_data_home}}/{{redis_port}}/dump.rdb \
+       {{backupdir_redis}}/redis_{{redis_port}}.rdb.{{backup_date}}
+  when: rdbfile.stat.exists
+  become: true
+  become_method: su
+
+## backup mysql
+- name: Create backup mysql dir
+  file: 
+    path: "{{backupdir_mysql}}"
+    state: directory
+  become: true
+  become_method: su
+  
+- name: Backup mysql game db
+  mysql_db: 
+    state: dump 
+    name: "{{gamedb_name}}" 
+    target: "{{backupdir_mysql}}/{{gamedb_name}}.sql.{{backup_date}}"
+    login_user: root 
+    login_password: "{{mysql_root_passwd}}"
+  become: true
+  become_method: su
+
+## backup .tmp file
+- name: Create backup server dir
+  file: 
+    path: "{{backupdir_server}}"
+    state: directory
+  become: true
+  become_method: su
+
+- name: Check if .time.tmp exist  
+  stat: path={{server_home}}/bin/.time.tmp
+  register: r
+  changed_when: false
+
+- name: Backup .time.tmp
+  command: cp {{server_home}}/bin/.time.tmp {{backupdir_server}}/time.tmp.{{backup_date}}
+  when: r.stat.exists
+  become: true
+  become_method: su
+
+- name: Check if .task.tmp exist  
+  stat: path={{server_home}}/bin/.task.tmp
+  register: r
+  changed_when: false
+
+- name: Backup .task.tmp
+  command: cp {{server_home}}/bin/.task.tmp {{backupdir_server}}/task.tmp.{{backup_date}}
+  when: r.stat.exists
+  become: true
+  become_method: su
+
+- name: Check if .activity_stage.tmp exist  
+  stat: path={{server_home}}/bin/.activity_stage.tmp
+  register: r
+  changed_when: false
+
+- name: Backup .activity_stage.tmp
+  command: cp {{server_home}}/bin/.activity_stage.tmp {{backupdir_server}}/activity_stage.tmp.{{backup_date}}
+  when: r.stat.exists
+  become: true
+  become_method: su

@@ -1,0 +1,33 @@
+---
+
+- include: package.yml
+  run_once: true
+  delegate_to: localhost
+
+
+- include: upgrade.yml server_type=["billing"]
+
+- name: Create billing init script
+  template:
+    src: server.init.j2
+    dest: /etc/init.d/{{billing_name}}
+    mode: 0755
+  vars:
+    pidfile: shaco.billing.pid
+    configfile: config_billing
+  become: true
+  become_method: su
+
+
+- name: flush handlers 
+  meta: flush_handlers
+
+- name: Ensure billing is running
+  service: name={{ billing_name }} state=started
+  become: true
+  become_method: su
+
+
+- include: iptables_limit.yml port={{billingcall_port}} ipwhitelist={{billing_whitelist}}
+  become: true
+  become_method: su

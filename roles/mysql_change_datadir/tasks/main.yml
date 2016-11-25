@@ -1,0 +1,80 @@
+---
+# 修改数据目录datadir: /var/lib/mysql
+# mkdir /home/data
+# mv /var/lib/mysql /home/data/
+# chown mysql:mysql -R /home/data/mysql
+# 
+# vim /etc/my.cnf
+# datadir=/home/data/mysql
+# socket=/home/data/mysql/mysql.sock
+# 
+# mysql本地连接默认就是/var/lib/mysql/mysql.sock，所以这里做下处理
+# mkdir /var/lib/mysql
+# ln -s /home/data/mysql/mysql.sock /var/lib/mysql/mysql.sock
+
+- vars:
+    mysql_datadir_old: {{ mysql_datadir_oldhome }}/mysql
+    mysql_datadir_new: {{ mysql_datadir_newhome }}/mysql
+
+- name: Create new mysql data home
+  file:
+    path: "{{ mysql_datadir_newhome }}"
+    state: directory
+    recurse: yes
+    owner: mysql
+
+- name: Stat old mysql datadir
+  stat: 
+    path: "{{ mysql_datadir_old }}"
+  register: datadir_old
+
+- name: Stat new mysql datadir
+  stat:
+    path: "{{ mysql_datadir_new }}"
+  register: datadir_new
+
+- name: Stop mysql
+  service:
+    name: "{{ mysql_service }}"
+    state: stopped
+  when: datadir_old.stat.exists and not datadir_new.stat.exists
+
+- name: Mv mysql datadir to new home
+  command: mv {{ mysql_datadir_old }} {{ mysql_datadir_newhome }}/
+  when: datadir_old.stat.exists and not datadir_new.stat.exists
+
+- name: Create old mysql datadir
+  file:
+    path: "{{ mysql_datadir_old }}"
+    state: directory
+    recurse: yes
+    owner: mysql
+
+- name: Alter datadir in my.cnf 
+  lineinfile: 
+    dest: "{{ mysql_conf_dir }}/my.cnf"
+    regexp: '^datadir={{ mysql_datadir_old }}'
+    line: 'datadir={{ mysql_datadir_new }}' 
+    backrefs: yes
+  notify: restart mysql
+
+- name: Alter mysql.sock in my.cnf 
+  lineinfile: 
+    dest: "{{ mysql_conf_dir }}/my.cnf"
+    regexp: '^socket={{ mysql_datadir_old }}/mysql.sock'
+    line: 'socket={{ mysql_datadir_new }}/mysql.sock' 
+    backrefs: yes
+  notify: restart mysql
+
+- name: Stat new mysql.sock
+  stat: 
+    path: "{{ mysql_datadir_new }}/mysql.sock"
+  register: mysql_sock
+
+- name: Link mysql.sock to old path
+  file:
+    src: "{{ mysql_datadir_new }}/mysql.sock"
+    dest: "{{ mysql_datadir_old }}/mysql.sock"
+    owner: mysql
+    state: link
+  when: mysql_sock.stat.exists

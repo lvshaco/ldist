@@ -1,0 +1,7 @@
+---
+shacobin_dir: /opt/shaco/bin
+web1_dir: /usr/local/src/web1
+web1_config: "{{web1_dir}}/conf/config"
+web1_logfile: "{{web1_dir}}/web1.log"
+web1_pidfile: "{{web1_dir}}/web1.pid"
+web1_user: root

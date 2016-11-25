@@ -1,0 +1,15 @@
+---
+- name: Upload res lua file
+  copy: 
+    src: "{{src_dir_dist}}/res/lua/__tp{{item}}.lua"
+    dest: "{{server_home}}/res/lua/__tp{{item}}.lua"
+  with_items: "{{ res_files }}"
+  register: code
+
+- name: Reload res lua file
+  shell: echo ":game reloadres {{ res_files|join(',') }}" | ./shaco config_cmdcli
+  args:
+    chdir: "{{server_home}}/bin"
+  register: reload_result
+  failed_when: reload_result.stdout.find("ok") == -1
+  when: code.changed

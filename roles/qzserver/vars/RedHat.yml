@@ -1,0 +1,8 @@
+---
+dev_pkgs:
+  - vim
+  - subversion 
+  - git 
+  - ncurses-devel # for tmux
+  - gcc-c++ # for compile c++
+  - readline-devel # for lua 

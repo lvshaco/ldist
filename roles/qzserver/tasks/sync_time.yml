@@ -1,0 +1,5 @@
+---
+- name: Sync time by ntpdate us.pool.ntp.org
+  shell: /usr/sbin/ntpdate us.pool.ntp.org
+  become: true
+  become_method: su

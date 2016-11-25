@@ -1,0 +1,45 @@
+#!/bin/bash
+usage() {
+    cat <<EOF
+Usage: $0 [options]
+    decrypt         decrypt all group_vars/all file and your list file
+    decrypt         decrypt all group_vars/all file and your list file
+    pull            pull passfile from dev host
+    -h | --help     print this message
+EOF
+}
+
+EN_FILES=(
+    "pl_qzserver/group_vars/39"
+)
+init() {
+    ln -s ../../pre-commit .git/hooks/pre-commit
+}
+encrypt() {
+    for v in pl_*; do
+        v=$v/group_vars/all
+        [[ -f $v ]] && echo $v && ansible-vault encrypt $v
+    done
+    for v in "${EN_FILES[@]}"; do
+        # notice: echo $v for pre-commit to git add changed file
+        echo $v && ansible-vault encrypt $v
+    done
+}
+decrypt() {
+    for v in pl_*; do
+        v=$v/group_vars/all
+        [[ -f $v ]] && echo $v && ansible-vault decrypt $v
+    done
+    for v in "${EN_FILES[@]}"; do
+        echo $v && ansible-vault decrypt $v
+    done
+}
+CMD=$1
+shift
+case $CMD in
+    pull) scp qzdev_lxj:ldist/.passfile .;;
+    encrypt) encrypt;;
+    decrypt) decrypt;;
+    init) init;;
+    *) usage; exit 1;;
+esac

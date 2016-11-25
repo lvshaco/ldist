@@ -1,0 +1,13 @@
+- name: Check if redis tarball exists in local
+  stat:
+    path: "{{ redis_tarball }}"
+  register: r
+  changed_when: false
+
+- name: Download redis in local
+  get_url:
+    url: "{{ redis_download_url }}"
+    dest: "{{ redis_tarball }}"
+    checksum: "{{ redis_checksum|default(omit) }}"
+    timeout: 1800 
+  when: not r.stat.exists

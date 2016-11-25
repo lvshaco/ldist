@@ -1,0 +1,24 @@
+---
+
+- name: Check backup_date
+  fail: msg="backup_date is undefined, need backup db first"
+  when: backup_date is undefined
+
+#- name: Create fetch dir
+#  file: state=directory path=.log/fetch
+
+- name: Fetch redis
+  fetch: src={{backupdir_redis}}/redis_{{redis_port}}.rdb.{{backup_date}} 
+      dest=.log/fetch/redis.rdb flat=yes
+
+- name: Fetch mysql
+  fetch: src="{{backupdir_mysql}}/{{gamedb_name}}.sql.{{backup_date}}" 
+      dest=.log/fetch/gamedb.sql flat=yes
+
+- name: Fetch tmp file
+  fetch: src={{backupdir_server}}/{{item}}.tmp.{{backup_date}}
+      dest=.log/fetch/{{item}}.tmp flat=yes
+  with_items:
+    - time
+    - task
+    - activity_stage

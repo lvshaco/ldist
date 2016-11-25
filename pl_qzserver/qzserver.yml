@@ -1,0 +1,17 @@
+---
+- name: Qz gameserver
+  hosts: gameserver
+  pre_tasks:
+    - include: fix_vars.yml
+  roles: 
+#    - role: mysql
+#      become: true
+#      become_method: su
+#      tags: [ 'init', 'dev' ]
+#
+#    - role: redis
+#      become: true
+#      become_method: su
+#      tags: [ 'init', 'dev' ]
+
+    - role: qzserver

@@ -1,0 +1,7 @@
+---
+#
+
+- name: disable password login
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^PasswordAuthentication.*' 
+              line='PasswordAuthentication no' backrefs=yes
+  notify: restart sshd

@@ -1,0 +1,52 @@
+---
+# checkout source and res; make -> server.tgz
+
+- name: Svn co source
+  subversion:
+    repo: "{{src_svn_dist}}"
+    dest: "{{src_dir_dist}}"
+    force: true
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: code
+
+- name: Svn co res
+  subversion:
+    repo: "{{res_svn_dist}}"
+    dest: "{{res_dir_dist}}"
+    force: true
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: res
+
+- name: Check if res/pb exists
+  stat:
+    path: "{{src_dir_dist}}/res/pb"
+  register: pbdir
+  when: not code.changed
+
+- name: Make proto
+  shell: make proto
+  args:
+    chdir: "{{src_dir_dist}}"
+  register: code
+  when: (code and code.changed) or (pbdir and not pbdir.stat.exists)
+
+- name: Check if res/lua exists
+  stat:
+    path: "{{src_dir_dist}}/res/lua"
+  register: resdir
+  when: not res.changed
+
+- name: Make convert res
+  shell: make convres res_dir={{playbook_dir}}/{{res_dir_dist}}
+  args:
+    chdir: "{{src_dir_dist}}"
+  register: res
+  when: (res and res.changed) or (resdir and not resdir.stat.exists)
+
+- name: Make package
+  shell: make package
+  args:
+    chdir: "{{src_dir_dist}}"
+  when: (code and code.changed) or (res and res.changed)

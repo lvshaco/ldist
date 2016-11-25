@@ -1,0 +1,6 @@
+#!/bin/bash
+en_files=$(./foot encrypt)
+for v in ${en_files[@]}; do
+    git add $v
+done
+exit 0

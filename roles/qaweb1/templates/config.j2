@@ -1,0 +1,19 @@
+maxsocket=64
+loglevel="."
+
+modpath="{{shacobin_dir}}"
+packagepath="{{shacobin_dir}}/lua-shaco.lso;{{shacobin_dir}}/lua-mod.lso"
+luamodpath="./lua-mod/?.lua;./examples/?.lua;./examples/login/?.lua"
+luamodpath="{{web1_dir}}/lua/?.lua;"..luamodpath
+luacpath="{{shacobin_dir}}/?.so"
+
+logfile="{{web1_logfile}}"
+pidfile="{{web1_pidfile}}"
+start="gmop"
+
+webdir="{{web1_dir}}/html"
+user="{{ qaweb1_user }}"
+passwd="{{ qaweb1_password }}"
+server="{{ qaweb1_server_user }}"
+server_dir="{{ qaweb1_server_dir }}"
+name="{{ qaweb1_server_name }}"

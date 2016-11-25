@@ -1,0 +1,22 @@
+---
+- name: User add by root (optional with rsa key)
+  hosts: all
+  remote_user: root
+  roles:
+    - ansible_dep
+    - role: sshd_rsa_enable
+      when: ssh_disable_key_login is undefined
+    - sshuser
+    - role: sshd_password_disable
+      when: ssh_disable_key_login is undefined and ssh_enable_password_login is undefined
+
+  #- name: Test if rsa key login is ok
+  #  remote_user: game
+  #  hosts: sshuser
+  #
+  #- name: Disable password login
+  #  hosts: sshuser
+  #  remote_user: root
+  #  roles:
+  #    - role: sshd_password_disable
+  #      when: ssh_enable_password_login is undefined

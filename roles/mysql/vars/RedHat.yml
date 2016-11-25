@@ -1,0 +1,9 @@
+---
+mysql_pkgs:
+  - libselinux-python
+  - MySQL-python
+  - mysql-server
+
+mysql_service: mysqld
+
+mysql_conf_dir: "/etc/"

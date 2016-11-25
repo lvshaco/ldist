@@ -1,0 +1,64 @@
+---
+
+- name: Remove .tmp file
+  file:
+    path: "{{server_home}}/bin/{{item}}"
+    state: absent
+  with_items:
+    - .time.tmp
+    - .task.tmp
+    - .activity_stage.tmp
+  when: reinit == "true"
+
+- name: Remove redis rdb
+  file:
+    path: "{{redis_data_home}}/{{redis_port}}/dump.rdb"
+    state: absent
+  become: true
+  become_method: su
+  when: reinit == "true"
+
+- name: Retrieve game db table count
+  command: >
+    mysql -u {{mysql_qzserver_user}} --password={{mysql_qzserver_passwd}} -e  
+    "SELECT count(TABLE_NAME) FROM information_schema.TABLES WHERE TABLE_SCHEMA='{{gamedb_name}}';"
+  register: r
+  changed_when: False
+  when: reinit == "false"
+
+- debug: msg="{{r.stdout}}"
+  when: reinit == "false"
+
+- name: Drop mysql game db
+  mysql_db:
+    state: absent
+    name: "{{gamedb_name}}" 
+    login_user: "{{mysql_qzserver_user}}" 
+    login_password: "{{mysql_qzserver_passwd}}"
+  when: reinit == "true"
+
+- name: Import game.sql 
+  mysql_db: 
+    state: import 
+    name: "{{gamedb_name}}" 
+    target: "{{server_home}}/sql/game.sql"
+    login_user: "{{mysql_qzserver_user}}" 
+    login_password: "{{mysql_qzserver_passwd}}"
+  when: (reinit == "true") or (r is defined and r.stdout.find('count(TABLE_NAME)\n0') != -1)
+
+
+- name: Get x_role AUTO_INCREMENT roleid
+  command: >
+    mysql -u {{mysql_qzserver_user}} --password={{mysql_qzserver_passwd}} -e "SELECT auto_increment FROM information_schema.TABLES WHERE TABLE_SCHEMA='{{gamedb_name}}' AND TABLE_NAME='x_role';"
+  register: r
+  changed_when: false
+
+- set_fact: maxid={{r.stdout_lines|last|int}}
+
+- debug: msg="Max roleid {{maxid}} -> {{start_roleid}}"
+
+- name: Set x_role AUTO_INCREMENT roleid
+  command: >
+    mysql -u {{mysql_qzserver_user}} --password={{mysql_qzserver_passwd}} -D {{gamedb_name}} -e 
+    "ALTER TABLE x_role AUTO_INCREMENT={{start_roleid}};"
+  when: maxid != start_roleid

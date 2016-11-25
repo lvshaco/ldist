@@ -1,0 +1,13 @@
+---
+- hosts: all
+  pre_tasks:
+    - shell: echo 'pre_tasks'
+  roles:
+    - role: test
+  tasks:
+    - shell: echo 'tasks'
+  post_tasks:
+    - shell: echo 'post_tasks'
+
+- hosts: all
+  # just test if rsa key login is ok

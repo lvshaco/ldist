@@ -1,0 +1,15 @@
+---
+- cron: name="web stat day" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical dayStatistical"
+  notify: restart crond
+- cron: name="web stat pay" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical payStatistical"
+  notify: restart crond
+- cron: name="web stat old" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical oldReserved"
+  notify: restart crond
+- cron: name="web stat online" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical online"
+  notify: restart crond
+- cron: name="web stat currency" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical currency"
+  notify: restart crond
+- cron: name="web stat specific" minute="0" hour="3" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical specific"
+  notify: restart crond
+- cron: name="web stat month" minute="0" hour="3" day="1" job="/usr/bin/php {{web_distdir}}/project.qz/qzadmin/protected/yiic statistical monthDau"
+  notify: restart crond

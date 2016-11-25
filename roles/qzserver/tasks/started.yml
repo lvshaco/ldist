@@ -1,0 +1,24 @@
+---
+
+- name: flush handlers 
+  meta: flush_handlers
+
+- name: Start mysql
+  service: name=mysqld state=started
+  become: true
+  become_method: su
+
+- name: Start redis
+  service: name=redis_{{redis_port}} state=started
+  become: true
+  become_method: su
+
+- name: Ensure server is running
+  service: name={{ server_name }} state=started
+  become: true
+  become_method: su
+
+- name: Ensure state is running
+  service: name={{ state_name}} state=started
+  become: true
+  become_method: su

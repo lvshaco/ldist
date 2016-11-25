@@ -1,0 +1,39 @@
+---
+- name: Checkout sql
+  subversion: 
+    repo: "{{web_sqlsvn}}/{{datedir}}"
+    dest: .log/qzadmin_mysql_db_{{datedir}}
+    force: true 
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: sql
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+- name: Pack sql
+  command: tar -zcf qzadmin_mysql_db_{{mydir}}.tgz qzadmin_mysql_db_{{mydir}} --exclude=.svn*
+  args:
+    chdir: .log
+  environment:
+  - GZIP: -n
+  when: sql.changed
+  run_once: true
+  delegate_to: localhost
+  become: false
+
+- name: Upload sql
+  copy: 
+    src: .log/qzadmin_mysql_db_{{datedir}}.tgz 
+    dest: "{{web_distdir}}/qzadmin_mysql_db_{{datedir}}.tgz"
+
+- name: Extract sql
+  unarchive:
+    src: "{{web_distdir}}/qzadmin_mysql_db_{{datedir}}.tgz"
+    dest: "{{web_distdir}}"
+    copy: no
+  register: sql
+
+  #- name: Execute sql
+  #  shell: for x in *.sql; do mysql < $x; done
+  #  when: sql.changed

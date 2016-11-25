@@ -1,0 +1,26 @@
+---
+
+- name: save iptables 
+  command: /sbin/service iptables save
+  become: true
+  become_method: su
+
+- name: restart iptables
+  service: name=iptables state=restarted
+  become: true
+  become_method: su
+
+- name: restart server
+  service: name={{server_name}} state=restarted
+  become: true
+  become_method: su
+
+- name: restart state
+  service: name={{state_name}} state=restarted
+  become: true
+  become_method: su
+
+- name: restart billing
+  service: name={{billing_name}} state=restarted
+  become: true
+  become_method: su

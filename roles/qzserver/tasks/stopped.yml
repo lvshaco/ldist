@@ -1,0 +1,10 @@
+---
+- name: Stop server
+  service: name={{server_name}} state=stopped
+  become: true
+  become_method: su
+
+#- name: Stop redis
+#  service: name=redis_{{redis_port}} state=stopped
+#  become: true
+#  become_method: su

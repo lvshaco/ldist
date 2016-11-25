@@ -1,0 +1,6 @@
+[submodule "roles/logrotate"]
+	path = roles/logrotate
+	url = https://github.com/nickhammond/ansible-logrotate.git
+[submodule "roles/mongodb"]
+	path = roles/mongodb
+	url = https://github.com/UnderGreen/ansible-role-mongodb.git

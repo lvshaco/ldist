@@ -1,0 +1,16 @@
+---
+
+- include: checkout_test_res.yml
+  run_once: true
+  delegate_to: localhost
+
+- include: reloadres.yml res_files={{test_lua_files}} src_dir_dist={{playbook_dir}}/{{test_res_dir_dist}}
+  when: test_lua_files|length > 0
+
+- name: Svn del test res after reloadres ok
+  shell: make test_del test_res_dir={{playbook_dir}}/{{test_res_dir_dist}} 
+  args:
+    chdir: "{{src_dir_dist}}"
+  when: test_lua_files|length > 0
+  run_once: true
+  delegate_to: localhost

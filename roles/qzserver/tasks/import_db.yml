@@ -1,0 +1,55 @@
+---
+- name: Create import dir
+  file: state=directory path={{item}}
+  with_items:
+    - "{{importdir_mysql}}"
+    - "{{importdir_redis}}"
+    - "{{importdir_server}}"
+  become: true
+  become_method: su
+
+- name: Upload data
+  copy: src=.log/fetch/{{item.name}} dest={{item.path}}/{{item.name}}
+  with_items:
+    - name: gamedb.sql
+      path: "{{importdir_mysql}}"
+    - name: redis.rdb
+      path: "{{importdir_redis}}"
+    - name: time.tmp
+      path: "{{importdir_server}}"
+    - name: task.tmp
+      path: "{{importdir_server}}"
+    - name: activity_stage.tmp
+      path: "{{importdir_server}}"
+  become: true
+  become_method: su
+
+- name: Ensure redis is stopped
+  service: name=redis_{{redis_port}} state=stopped
+  become: true
+  become_method: su
+
+- name: Import redis rdb
+  copy: src={{importdir_redis}}/redis.rdb 
+      dest={{redis_data_home}}/{{redis_port}}/dump.rdb
+      remote_src=True
+  become: true
+  become_method: su
+
+- name: Import mysql gamedb
+  mysql_db: state=import name={{gamedb_name}} 
+      target={{importdir_mysql}}/gamedb.sql
+      login_user={{mysql_qzserver_user}} 
+      login_password={{mysql_qzserver_passwd}}
+  become: true
+  become_method: su
+
+- name: Import tmp file
+  copy: src={{importdir_server}}/{{item}}.tmp 
+      dest={{server_home}}/bin/.{{item}}.tmp
+      remote_src=True
+  with_items: 
+    - time
+    - task
+    - activity_stage
+  notify: restart server

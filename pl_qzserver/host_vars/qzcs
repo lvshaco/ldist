@@ -1,0 +1,7 @@
+---
+###############################################
+# mysql
+gamedb: qzdcs
+logdb: qzlogcs
+
+portoffset: 100

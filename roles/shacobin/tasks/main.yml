@@ -1,0 +1,32 @@
+---
+# install shacobin
+- name: Svn co shacobin
+  subversion:
+    repo: "{{shacobin_svn}}"
+    dest: .log/shacobin
+    force: true
+    username: "{{my_svn_user}}"
+    password: "{{my_svn_pass}}"
+  register: code
+  become: false
+  run_once: true
+  delegate_to: localhost
+
+- name: Pack shacobin
+  shell: tar -zcf ../shacobin.tgz shaco *.so *.lso
+  args:
+    chdir: .log/shacobin
+  become: false
+  run_once: true
+  delegate_to: localhost
+  when: code.changed
+
+- name: Upload shacobin
+  copy: src=.log/shacobin.tgz dest=/usr/local/src/shacobin.tgz
+
+- name: Check if /opt/shaco/bin exist
+  file: path=/opt/shaco/bin state=directory
+
+- name: Extract shacobin
+  unarchive: src=/usr/local/src/shacobin.tgz dest=/opt/shaco/bin copy=no owner=root group=root
+  register: shacobin

@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Simple {{server_name}} init.d script for RHEL-based distros
+#
+# chkconfig: - 58 74
+# description: {{server_name}}
+#
+# Source function library
+. /etc/init.d/functions
+
+USER={{ ansible_user_id }}
+BINDIR={{ server_home}}/bin
+PIDFILE=$BINDIR/{{pidfile}}
+CONF={{configfile}}
+EXEC=./shaco
+
+case "$1" in
+    start)
+        if [ -f $PIDFILE ]
+        then
+                echo "$PIDFILE exists, process is already running or crashed"
+        else
+                echo "Starting {{server_name}} ..."
+                cd $BINDIR && daemon --user $USER $EXEC $CONF --daemon 1
+        fi
+        ;;
+    stop)
+        if [ ! -f $PIDFILE ]
+        then
+                echo "$PIDFILE does not exist, process is not running"
+        else
+                PID=$(cat $PIDFILE)
+                echo "Stopping ..."
+                kill -2 $PID
+                while [ -x /proc/${PID} ]
+                do
+                    echo "Waiting for {{server_name}} to shutdown ..."
+                    sleep 1
+                done
+                echo "{{server_name}} stopped"
+        fi
+        ;;
+    status)
+        status -p "${PIDFILE}" "{{server_name}}"
+        ;;
+    restart|force-reload)
+        ${0} stop
+        ${0} start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/{{server_name}} {start|stop|status|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit $?

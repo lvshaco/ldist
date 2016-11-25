@@ -1,0 +1,17 @@
+---
+# this playbook will enable ssh rsa key login
+
+- name: enable RSAAuthentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#RSAAuthentication.*' 
+              line='RSAAuthentication yes' backrefs=yes
+  notify: restart sshd
+
+- name: enable PubkeyAuthentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#PubkeyAuthentication.*' 
+              line='PubkeyAuthentication yes' backrefs=yes
+  notify: restart sshd
+
+- name: set AuthorizedKeysFile
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#AuthorizedKeysFile.*' 
+              line='AuthorizedKeysFile .ssh/authorized_keys' backrefs=yes
+  notify: restart sshd

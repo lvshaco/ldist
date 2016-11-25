@@ -1,0 +1,15 @@
+---
+- name: Upload lua/game lua file
+  copy: 
+    src: "{{src_dir_dist}}/lua/game/{{item}}.lua"
+    dest: "{{server_home}}/lua/game/{{item}}.lua"
+  with_items: "{{ hotfix_files }}"
+  register: code
+
+- name: Hotfix lua/game lua file
+  shell: echo ":game hotfix {{ hotfix_files|join(',') }}" | ./shaco config_cmdcli
+  args:
+    chdir: "{{server_home}}/bin"
+  register: hotfix_result
+  failed_when: hotfix_result.stdout.find("ok") == -1
+  when: code.changed

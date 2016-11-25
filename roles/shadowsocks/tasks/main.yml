@@ -1,0 +1,42 @@
+---
+- name: Install the dep package
+  yum: name={{ item }} state=installed
+  with_items:
+    - python-pip
+
+- name: Install shadowsocks
+  pip: name=shadowsocks
+  notify: restart shadowsocks
+
+- name: Create shadowsocks config file
+  template:
+    src: shadowsocks.json.j2
+    dest: /etc/shadowsocks.json
+  notify: restart shadowsocks
+
+- name: Create shadowsocks service file
+  template:
+    src: shadowsocks.service.j2
+    dest: /etc/systemd/system/shadowsocks.service 
+  notify: restart shadowsocks
+
+- name: Set shadowsocks to start at boot
+  service: name=shadowsocks enabled=yes
+
+- name: flush handlers to apply config changes
+  meta: flush_handlers
+
+- name: Ensure shadowsocks is running
+  service: name=shadowsocks state=started
+
+#- name: 
+#  iptables:
+#    action: insert
+#    chain: INPUT 
+#    ctstate: new
+#    protocol: tcp
+#    destination_port: "{{shadowsocks_port}}"
+#    jump: ACCEPT
+#  notify: 
+#    - save iptables
+#    - restart iptables

@@ -1,0 +1,13 @@
+---
+# 
+- name: Install python bindings for ansible
+  yum: name={{ item }} state=present
+  with_items:
+   - libselinux-python
+   - libsemanage-python
+   - MySQL-python
+
+  #- name: test to see if selinux is running
+  #  command: getenforce
+  #  register: sestatus
+  #  changed_when: false

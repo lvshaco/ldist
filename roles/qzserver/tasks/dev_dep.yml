@@ -1,0 +1,66 @@
+---
+- name: Add the OS specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install the dev packages in Redhat derivatives
+  yum: name={{ item }} state=installed
+  with_items: "{{ dev_pkgs }}"
+
+- name: Upload tarball
+  copy: 
+    src: ../dep/{{item}}.tar.gz 
+    dest: /usr/local/src/{{item}}.tar.gz
+  with_items:
+    - xlrd-0.9.3
+    - protobuf-2.5.0
+    - lua-5.3.3
+    - tmux-1.9a
+    - libevent-2.0.22-stable
+
+- name: Extract dep package
+  unarchive:
+    src: /usr/local/src/{{item}}.tar.gz
+    dest: /usr/local/src
+    creates: /usr/local/src/{{item}}
+    copy: no
+  with_items:
+    - xlrd-0.9.3
+    - protobuf-2.5.0
+    - lua-5.3.3
+    - tmux-1.9a
+    - libevent-2.0.22-stable
+
+- name: Install dep package
+  shell: ./configure && make && make install
+  args:
+      chdir: /usr/local/src/{{item}}
+      creates: Makefile
+  with_items:
+    - libevent-2.0.22-stable
+    - tmux-1.9a
+    - protobuf-2.5.0
+
+- name: Install xlrd
+  command: python setup.py install
+  args:
+      chdir: /usr/local/src/xlrd-0.9.3
+      creates: build
+
+# lua make linux && make install INSTALL_TOP=/usr 合一成一条出错!？
+- name: Compile lua
+  command: make linux 
+  args:
+      chdir: /usr/local/src/lua-5.3.3
+      creates: src/lua
+
+- name: Install lua
+  command: make install INSTALL_TOP=/usr
+  args:
+      chdir: /usr/local/src/lua-5.3.3
+      creates: src/lua
+
+- name: ulimit core
+  pam_limits: domain=* limit_type=- limit_item=core value=unlimited
+
+- name: ulimit nofile
+  pam_limits: domain=* limit_type=- limit_item=nofile value=20000

@@ -1,0 +1,5 @@
+---
+qaweb1_iptables_sources: "{{lan_iptables}}"
+qaweb1_server_user: game
+qaweb1_server_dir: server/trunk 
+qaweb1_server_name: 策划服

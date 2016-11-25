@@ -1,0 +1,11 @@
+---
+- name: check for checksum
+  fail:
+    msg: >
+      There is no sha1 checksum defined for version {{ redis_version }} in
+      vars/main.yml. Set redis_checksum manually or submit a PR to add this
+      version.
+  when:
+    - redis_verify_checksum|bool
+    - redis_checksum is not defined
+    - redis_version not in redis_checksums

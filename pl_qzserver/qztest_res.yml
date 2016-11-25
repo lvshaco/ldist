@@ -1,0 +1,21 @@
+---
+# 策划线上测试服临时数据测试策略
+# ===
+# 1. 切记不在{数据表目录}/xls中修改测试数据，以免被更新到线上
+# 2. 定位到指定测试服对应的版本的{数据表目录}/test_excel目录
+#     1. svn更新
+#     2. 拷贝需修改的表格到此，修改成测试数据
+#     3. svn添加，svn提交
+#     4. 通知服务器更新
+# 3. 服务器执行make test_res（更新测试数据到对应测试服，并删除测试数据）
+# 4. 通知策划数据更新成功，可以测试
+# ===
+# 此脚本使用ansible的方式替代了make test_res的工作
+
+- name: Qz test_res
+  hosts: all
+  tasks:
+    - name: test_res
+      include_role: 
+        name: qzserver 
+        tasks_from: test_res

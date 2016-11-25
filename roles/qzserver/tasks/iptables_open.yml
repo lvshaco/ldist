@@ -1,0 +1,41 @@
+---
+- name: iptables open + accept port
+  iptables:
+    action: insert
+    chain: INPUT 
+    ctstate: new
+    protocol: tcp
+    destination_port: "{{port}}"
+    jump: ACCEPT
+  notify: 
+    - save iptables
+    - restart iptables
+
+- name: iptables open - drop port
+  iptables:
+    action: insert
+    chain: INPUT 
+    ctstate: new
+    protocol: tcp
+    destination_port: "{{port}}"
+    jump: DROP
+    state: absent
+  notify: 
+    - save iptables
+    - restart iptables
+
+- name: iptables open - accept iplist
+  iptables:
+    action: insert
+    chain: INPUT 
+    source: "{{item}}"
+    ctstate: new
+    protocol: tcp
+    destination_port: "{{port}}"
+    jump: ACCEPT
+    state: absent
+  with_items: 
+    - "{{ipwhitelist}}"
+  notify: 
+    - save iptables
+    - restart iptables

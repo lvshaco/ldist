@@ -1,0 +1,3 @@
+curpath=`pwd`/conf/config
+pgrep -f "./shaco $curpath" |xargs kill -9
+cd /opt/shaco/bin && ./shaco $curpath --daemon 1

@@ -1,0 +1,11 @@
+---
+# 
+- name: save iptables 
+#  service: name=iptables state=save
+  command: /sbin/service iptables save
+
+- name: restart iptables
+  service: name=iptables state=restarted
+
+- name: restart web1
+  service: name=web1 state=restarted

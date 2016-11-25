@@ -1,0 +1,34 @@
+#############################
+# 内网游戏服务器
+[coolsoft]
+localhost  serverid=0 start_roleid=1
+qzdev_lxj  serverid=0 start_roleid=1
+qzdev_jie  serverid=0 start_roleid=1
+qzdev_game serverid=0 start_roleid=1
+qzdev_db   serverid=0 start_roleid=1
+
+
+# 外网游戏服务器
+[out]
+qzbuilder
+
+# 39游戏服务器
+[39]
+qzcs    serverid=15     start_roleid=1       branch=1.2.100
+qzcs2   serverid=19     start_roleid=1       branch=1.2.100
+qzios   serverid=21     start_roleid=1       branch=1.2.100
+qzs1    serverid=9      start_roleid=1       branch=1.1.200
+qzs2    serverid=14     start_roleid=1000001 branch=1.1.200
+
+[gameserver:children]
+coolsoft
+out
+39
+
+[billingserver]
+qzcs2
+qzbilling
+
+[commondb]
+qzdev_game
+qzs1
