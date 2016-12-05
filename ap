@@ -107,6 +107,6 @@ R="ansible-playbook -i "${hostfile}" "${pl_yml}.yml" -K"${tag}" -l "
 other=$(dialog --title "$TITLE"  --inputbox "$R" 12 70  2>&1 >/dev/tty)
 other=${other[0]}
 #read -p "$R" other
-cd pl_"$pl_dir" && ANSIBLE_CONFIG=../ansible.cfg ANSIBLE_VAULT_PASSWORD_FILE=../.passfile $R $other
+cd pl_"$pl_dir" && mkdir -pv .log && ANSIBLE_CONFIG=../ansible.cfg ANSIBLE_VAULT_PASSWORD_FILE=../.passfile $R $other
 
 exit

@@ -5,7 +5,7 @@
   delegate_to: localhost
 
 
-- include: upgrade.yml server_type=["billing"]
+- include: upgrade.yml server_type=billing
 
 - name: Create billing init script
   template:

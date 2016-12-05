@@ -4,7 +4,7 @@
   become: true
   become_method: su
   vars:
-    server_pidfile: "{{server_home}}/bin/shaco.pid"
+    server_pidfile: "{{server_home}}/bin/shaco.game.pid"
     state_pidfile: "{{server_home}}/bin/shaco.state.pid"
   roles:
     - role: logrotate

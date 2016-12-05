@@ -5,7 +5,7 @@
     dest: /etc/init.d/{{server_name}}
     mode: 0755
   vars:
-    pidfile: shaco.pid
+    pidfile: shaco.game.pid
     configfile: config_game
 
 - name: Create state init script
