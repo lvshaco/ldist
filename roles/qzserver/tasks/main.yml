@@ -34,7 +34,7 @@
   run_once: true
   delegate_to: localhost
   tags: [ 'init', 'upgrade', 'hotfix', 'reloadres' ]
-- include: upgrade.yml server_type=["server"]
+- include: upgrade.yml server_type=server
   tags: [ 'init', 'upgrade' ]
 - include: hotfix.yml
   tags: [ 'hotfix' ]
@@ -71,10 +71,10 @@
   become_method: su
   tags: [ 'gateopen' ]
 
-- include: iptables_limit.yml port={{mysql_port}} ipwhitelist=[]
-  become: true
-  become_method: su
-  tags: [ 'init', 'gatelimit' ]
+#- include: iptables_limit.yml port={{mysql_port}} ipwhitelist=[]
+#  become: true
+#  become_method: su
+#  tags: [ 'init', 'gatelimit' ]
 
 - include: iptables_limit.yml port={{gateport}} ipwhitelist={{gate_whitelist}}
   become: true

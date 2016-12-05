@@ -14,11 +14,11 @@ qzbuilder
 
 # 39游戏服务器
 [39]
-qzcs    serverid=15     start_roleid=1       branch=1.2.100
-qzcs2   serverid=19     start_roleid=1       branch=1.2.100
-qzios   serverid=21     start_roleid=1       branch=1.2.100
-qzs1    serverid=9      start_roleid=1       branch=1.1.200
-qzs2    serverid=14     start_roleid=1000001 branch=1.1.200
+qzcs    serverid=15     start_roleid=1       branch=1.3.100
+qzcs2   serverid=19     start_roleid=1       branch=1.3.100
+qzios   serverid=21     start_roleid=1       branch=1.3.100
+qzs1    serverid=9      start_roleid=1       branch=1.3.100
+qzs2    serverid=14     start_roleid=1000001 branch=1.3.100
 
 [gameserver:children]
 coolsoft
@@ -36,6 +36,7 @@ qzs1
 qzbuilder
 
 [monitoragent]
+qzdev_game
 qzbuilder
 qzcs
 qzios
