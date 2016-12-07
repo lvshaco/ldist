@@ -41,5 +41,4 @@ qzdev_game
 qzbuilder
 qzcs
 qzios
-qzs1
-qzs2
+qzs[1:3]

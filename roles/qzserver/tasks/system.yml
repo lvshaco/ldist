@@ -1,0 +1,14 @@
+---
+- name: set ulimit core
+  pam_limits:
+    domain: "*"
+    limit_type: "-"
+    limit_item: core
+    value: unlimited
+
+- name: set ulimit nofile
+  pam_limits:
+    domain: "*"
+    limit_type: "-"
+    limit_item: nofile
+    value: 10000

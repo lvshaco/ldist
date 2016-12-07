@@ -1,5 +1,11 @@
 ---
 
+# system
+- include: system.yml
+  become: true
+  become_method: su
+  tags: [ 'init', 'dev' ]
+
 # stopped
 - include: stopped.yml
   tags: [ 'reinit', 'importdb' ]
