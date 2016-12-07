@@ -19,6 +19,7 @@ qzcs2   serverid=19     start_roleid=1       branch=1.3.100
 qzios   serverid=21     start_roleid=1       branch=1.3.100
 qzs1    serverid=9      start_roleid=1       branch=1.3.100
 qzs2    serverid=14     start_roleid=1000001 branch=1.3.100
+qzs3    serverid=17     start_roleid=2000001 branch=1.3.100
 
 [gameserver:children]
 coolsoft
