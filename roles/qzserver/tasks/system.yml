@@ -4,11 +4,16 @@
     domain: "*"
     limit_type: "-"
     limit_item: core
-    value: unlimited
+    value: "{{sys_core}}"
 
 - name: set ulimit nofile
   pam_limits:
     domain: "*"
     limit_type: "-"
     limit_item: nofile
-    value: 10000
+    value: "{{sys_nofile}}"
+
+- name: set sysctl SOMAXCONN
+  sysctl:
+    name: "net.core.somaxconn"
+    value: "{{sys_backlog}}"
