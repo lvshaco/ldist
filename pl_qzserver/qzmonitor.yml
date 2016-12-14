@@ -77,5 +77,8 @@
   hosts: monitoragent
   become: true
   become_method: su
+  pre_tasks:
+    - name: Change hostname
+      hostname: name={{inventory_hostname}}
   roles:
     - role: graylog_agent
