@@ -4,6 +4,7 @@
 localhost  serverid=0 start_roleid=1
 qzdev_lxj  serverid=0 start_roleid=1
 qzdev_jie  serverid=0 start_roleid=1
+qzdev_jie2 serverid=0 start_roleid=1
 qzdev_game serverid=0 start_roleid=1
 qzdev_db   serverid=0 start_roleid=1
 

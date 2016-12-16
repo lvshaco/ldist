@@ -2,3 +2,5 @@
 server_home: "/home/{{ansible_user_id}}/server/trunk"
 
 gm_state: 100
+
+commonhost: "192.168.1.220"
