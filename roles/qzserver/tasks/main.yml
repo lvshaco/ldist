@@ -85,4 +85,5 @@
 - include: iptables_limit.yml port={{gateport}} ipwhitelist={{gate_whitelist}}
   become: true
   become_method: su
-  tags: [ 'init', 'gatelimit' ]
+  tags: [ 'gatelimit' ]
+  #tags: [ 'init', 'gatelimit' ]
