@@ -34,16 +34,16 @@ PL=(
 "9" "qzbilling" "qzserver"  "hosts"        "-K"   "qzbilling"
 )
 TAG_qzserver=(
-"1" "dev"         "dev"
-"2" "init"        "init"
-"3" "upgrade"     "upgrade"
-"4" "hotfix"      "hotfix"
-"5" "reloadres"   "reloadres"
-"6" "gateopen"    "gateopen"
-"7" "gatelimit"   "gatelimit"
-"8" "dumpdb"      "dumpdb"
-"9" "importdb"    "importdb"
-"10" "reinit"      "reinit"
+"1" "dev"         ""                   "dev"
+"2" "init"        ""                   "init"        
+"3" "upgrade"     ""                   "upgrade"     
+"4" "hotfix"      "-e @upgrade.json"   "hotfix"      
+"5" "reloadres"   "-e @upgrade.json"   "reloadres"   
+"6" "gateopen"    ""                   "gateopen"    
+"7" "gatelimit"   ""                   "gatelimit"   
+"8" "dumpdb"      ""                   "dumpdb"      
+"9" "importdb"    ""                   "importdb"    
+"10" "reinit"     ""                   "reinit"     
 )
 mychoice() {
     sub_title=$1
@@ -84,8 +84,14 @@ get_opts() {
 get_tag() {
     index=$1
     index=$((index-1))
-    index=$((index*3+1))
+    index=$((index*4+$2))
     echo "${TAG_qzserver[$index]}"
+}
+get_tagname() {
+    get_tag $1 1
+}
+get_tagopt() {
+    get_tag $1 2
 }
 
 gen_choice 6 "${PL[@]}"
@@ -98,10 +104,11 @@ hostfile=$(get_hostfile $ichoice)
 opts=$(get_opts $ichoice)
 
 if [[ $ichoice == "1" ]]; then
-    gen_choice 3 "${TAG_qzserver[@]}"
+    gen_choice 4 "${TAG_qzserver[@]}"
     ichoice=$(mychoice "select qzserver function:" "${cur_choice[@]}")
     [[ $ichoice == "" ]] && exit 1
-    tag=$(get_tag $ichoice)
+    tag=$(get_tagname $ichoice)
+    opts="$opts $(get_tagopt $ichoice)"
 fi
 
 [[ "${tag}" != "" ]] && tag=" -t ${tag}" 
@@ -111,6 +118,7 @@ R="ansible-playbook -i "${hostfile}" "${pl_yml}.yml" "${opts}""${tag}" -l "
 other=$(dialog --title "$TITLE"  --inputbox "$R" 12 70  2>&1 >/dev/tty)
 other=${other[0]}
 #read -p "$R" other
+#echo $R
 cd pl_"$pl_dir" && mkdir -pv .log && ANSIBLE_CONFIG=../ansible.cfg ANSIBLE_VAULT_PASSWORD_FILE=../.passfile $R $other
 
 exit
