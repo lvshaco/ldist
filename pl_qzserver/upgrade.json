@@ -1,7 +1,9 @@
 {
   hotfix_files: [
-    recharge_ios
+    attach_magic
     ],
   res_files: [
+    code,
+    gift_treasure,
     ]
 }
