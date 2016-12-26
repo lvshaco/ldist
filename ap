@@ -32,6 +32,7 @@ PL=(
 "7" "qzmonitor" "qzserver"  "hosts"        "-K"   "qzmonitor"
 "8" "qztest_res" "qzserver" "hosts"        "-K"   "qztest_res"
 "9" "qzbilling" "qzserver"  "hosts"        "-K"   "qzbilling"
+"10" "mytest" "qzserver"  "hosts"        "-K"   "mytest"
 )
 TAG_qzserver=(
 "1" "dev"         ""                   "dev"

@@ -1,0 +1,13 @@
+---
+
+- name:
+  hosts: all
+  tasks:
+    - name: 
+      shell: >
+        mysql -u {{mysql_qzserver_user}} --password="{{mysql_qzserver_passwd}}" -D {{gamedb_name}} -Ne 
+        "select cast(acc as char) from x_role;" > acc.{{inventory_hostname}}.csv
+    - name:
+      fetch: src=acc.{{inventory_hostname}}.csv
+          dest=.log/fetch/acc.{{inventory_hostname}}.csv flat=yes
+
