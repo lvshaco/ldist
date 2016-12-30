@@ -2,3 +2,11 @@
 ios_sandbox: 1
 
 gm_state: 100
+
+gamedb: qzdios
+logdb: qzlogios
+statdb: qzstatios
+
+gateport: 18102
+cmdport: 18101
+redis_port: 17100

@@ -1,11 +1,11 @@
 ---
 ###############################################
+gm_state: 100
+
 # mysql
 gamedb: qzdcs
 logdb: qzlogcs
 statdb: qzstatcs
-
-gm_state: 100
 
 gateport: 18102
 cmdport: 18101

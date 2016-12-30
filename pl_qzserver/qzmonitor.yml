@@ -33,6 +33,16 @@
               #- delaycompress
           scripts:
               postrotate: "[ -s {{state_pidfile}} ] && kill -USR1 `cat {{state_pidfile}}`"
+  tasks:
+      - cron: name="sync time" minute="0-59/10" job="/usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP"
+        notify: restart crond
+      - cron: name="backup {{gamedb}} " minute="0" hour="4" job='mkdir -pv /data && mysqldump -uroot -p"{{mysql_root_passwd}}" -lF -B {{gamedb}} > /data/{{gamedb}}.sql.`date +\%Y\%m\%d-\%H\%M\%S` 2>/dev/null'
+        notify: restart crond
+      - cron: name="cron daily" minute="0" hour="4" job="root run-parts /etc/cron.daily"
+        notify: restart crond
+  handlers:
+    - name: restart crond
+      service: name=crond state=restarted
 
 - name: Qz logrotate in billingserver
   hosts: billingeserver
@@ -67,5 +77,8 @@
   hosts: monitoragent
   become: true
   become_method: su
+  pre_tasks:
+    - name: Change hostname
+      hostname: name={{inventory_hostname}}
   roles:
     - role: graylog_agent

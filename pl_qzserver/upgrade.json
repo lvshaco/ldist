@@ -1,6 +1,9 @@
 {
   hotfix_files: [
+    attach_magic
     ],
   res_files: [
+    code,
+    gift_treasure,
     ]
 }
