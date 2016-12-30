@@ -29,14 +29,16 @@
 - name: Ensure shadowsocks is running
   service: name=shadowsocks state=started
 
-#- name: 
-#  iptables:
-#    action: insert
-#    chain: INPUT 
-#    ctstate: new
-#    protocol: tcp
-#    destination_port: "{{shadowsocks_port}}"
-#    jump: ACCEPT
-#  notify: 
-#    - save iptables
-#    - restart iptables
+- name: 
+  iptables:
+    action: insert
+    chain: INPUT 
+    ctstate: new
+    protocol: tcp
+    destination_port: "{{item.port}}"
+    jump: ACCEPT
+  with_items: 
+    - "{{shadowsocks_port_password}}"
+  notify: 
+    - save iptables
+    - restart iptables

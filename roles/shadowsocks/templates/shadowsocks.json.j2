@@ -1,6 +1,9 @@
 {
   "server": "0.0.0.0",
-  "server_port": {{shadowsocks_port}},
-  "password": "{{shadowsocks_pass}}",
+  "port_password": {
+      {% for item in shadowsocks_port_password %}
+        "{{item.port}}": "{{item.password}}"
+      {% endfor %}
+  },
   "method": "aes-256-cfb"
 }

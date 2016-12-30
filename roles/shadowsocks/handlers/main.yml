@@ -1,5 +1,8 @@
 ---
 
+- name: restart shadowsocks
+  service: name=shadowsocks state=restarted
+
 - name: save iptables 
 #  service: name=iptables state=save
   command: iptables-save
