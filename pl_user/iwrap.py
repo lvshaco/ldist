@@ -3,6 +3,7 @@
 
 hostvars = {
     'vps':       { 'ansible_host': '45.76.205.94',  'ansible_port': 22 },
+    'vps2':      { 'ansible_host': '45.32.248.255', 'ansible_port': 22 },
     'qzdev_lxj': { 'ansible_host': '127.0.0.1',     'ansible_port': 19860 },
     'qzdev_game':{ 'ansible_host': '192.168.1.220', 'ansible_port': 22 },
     'qzdev_jie': { 'ansible_host': '192.168.1.221', 'ansible_port': 22 },
@@ -31,7 +32,7 @@ user_39 = [
 ]
 groups = {
     'vps': {
-        'hosts': [ 'vps' ],
+        'hosts': [ 'vps', 'vps2' ],
         'vars': { 'sshuser': user_vps },
         },
     'coolsoft': {

@@ -5,7 +5,7 @@
 
 - name: save iptables 
 #  service: name=iptables state=save
-  command: iptables-save
+  command: /usr/sbin/iptables-save
 
 - name: restart iptables
   service: name=iptables state=restarted

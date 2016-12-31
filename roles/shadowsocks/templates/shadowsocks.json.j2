@@ -2,7 +2,11 @@
   "server": "0.0.0.0",
   "port_password": {
       {% for item in shadowsocks_port_password %}
+        {%- if loop.last -%}
         "{{item.port}}": "{{item.password}}"
+        {%- else -%} 
+        "{{item.port}}": "{{item.password}}", 
+        {% endif %}
       {% endfor %}
   },
   "method": "aes-256-cfb"
